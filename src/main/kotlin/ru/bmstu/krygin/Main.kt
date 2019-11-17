@@ -1,4 +1,5 @@
-import kotlin.math.absoluteValue
+package ru.bmstu.krygin
+
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
@@ -46,19 +47,21 @@ fun playMatrixGame(n: Int, m: Int) {
 
     var k = 0
 
+
+
     print("k".padStart(4))
     print("x".padStart(2))
     print("y".padStart(2))
-    for (i in 0 until winX.size) print("x$i".padStart(4))
-    for (i in 0 until winY.size) print("y$i".padStart(4))
+    for (i in winX.indices) print("x$i".padStart(4))
+    for (i in winY.indices) print("y$i".padStart(4))
     println()
 
     do {
         k++;
-        for (i in 0 until winX.size) {
+        for (i in winX.indices) {
             winX[i] += paymentMatrix[strategyY][i]
         }
-        for (i in 0 until winY.size) {
+        for (i in winY.indices) {
             winY[i] += paymentMatrix[i][strategyX]
         }
 
@@ -82,26 +85,6 @@ fun playMatrixGame(n: Int, m: Int) {
 
 
     } while (k < 8000)
-}
-
-fun getMaxMin(matrix: Array<Array<Double>>): MaxMin {
-    var min: Double
-    var max = 0.0
-
-    var iMax = 0
-
-    for (i in 0 until matrix.size) {
-        min = matrix[i][0]
-        for (j in 1 until matrix[i].size)
-            if (min > matrix[i][j])
-                min = matrix[i][j]
-        if (max < min) {
-            max = min
-            iMax = i
-        }
-
-    }
-    return MaxMin(max, iMax)
 }
 
 fun Array<Array<Double>>.row(index: Int) = this[index]
