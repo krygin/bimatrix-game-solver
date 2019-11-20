@@ -9,162 +9,27 @@ fun main(arguments: Array<String>) {
     val n = 10
     val m = 5
 
-//    defenderPaymentMatrix.print()
-//
-//    println("Row Example")
-//    defenderPaymentMatrix.row(2).print()
-//
-//    println("Column Example")
-//    defenderPaymentMatrix.column(2).print()
-
     val gameMatrix = Matrix(Array(m) { Array(n) {Random.nextDouble(0.0, 100.0)}})
-    playMatrixGame(gameMatrix, 100.0/100)
+//    BrownRobinsonMatrixGame(matrix = gameMatrix, accuracy = 1.0).play()
 
-    val defenderPaymentMatrix = Matrix(Array(m) { Array(n) { Random.nextDouble(0.0, 100.0) } })
-    val attackerPaymentMatrix = Matrix(Array(m) { Array(n) { Random.nextDouble(0.0, 100.0) } })
-    playBiMatrixGame(defenderPaymentMatrix, attackerPaymentMatrix, 100.0/100)
-//
+    val defenderPaymentMatrix = Matrix(arrayOf(
+        arrayOf(54, 66, 71, 60, 97, 33, 56, 32, 92),
+        arrayOf(92, 95, 52, 74, 91, 18, 46, 33, 4),
+        arrayOf(5, 16, 57, 63, 21, 52, 79, 26, 20),
+        arrayOf(88, 93, 18, 29, 86, 53, 37, 62, 97),
+        arrayOf(90, 35, 99, 63, 23, 54, 37, 30, 14)
+    ).map { it.map { item -> item.toDouble() }.toTypedArray() }.toTypedArray())
+
+    val attackerPaymentMatrix = Matrix( arrayOf(
+        arrayOf(75, 62, 92, 22, 60, 21, 60, 20, 59),
+        arrayOf(38, 31, 94, 1, 11, 34, 45, 48, 81),
+        arrayOf(89, 81, 9, 67, 58, 44, 9, 50, 18),
+        arrayOf(33, 89, 77, 95, 40, 89, 84, 38, 76),
+        arrayOf(96, 90, 8, 89, 96, 37, 59, 62, 45)
+    ).map { it.map { item -> item.toDouble() }.toTypedArray() }.toTypedArray())
+//    val defenderPaymentMatrix = Matrix(Array(m) { Array(n) { Random.nextInt(0, 100).toDouble() } })
+//    val attackerPaymentMatrix = Matrix(Array(m) { Array(n) { Random.nextInt(0, 100).toDouble() } })
+    BrownRobinsonBiMatrixGame(defenderMatrix = defenderPaymentMatrix, attackerMatrix = attackerPaymentMatrix, accuracy = 1.0).play()
+
     print("Hello world!!!")
-}
-
-fun playBiMatrixGame(defenderPaymentMatrix: Matrix, attackerPaymentMatrix: Matrix, accuracy: Double) {
-
-    // Накопленный выигрыш
-    val winX = Array(defenderPaymentMatrix.n) { 0.0 }
-    val winY = Array(attackerPaymentMatrix.m) { 0.0 }
-
-    // step 0
-    var strategyX = 0
-    var strategyY = 0
-
-    var k = 0
-
-
-    val fileWriter = File("bi_matrix_game.csv").printWriter()
-    fileWriter.apply {
-        val columns = listOf(
-            "k",
-            "minValue",
-            "maxValue"
-        )
-        println(columns.joinToString())
-    }
-    print("k".padStart(4))
-    print("x".padStart(2))
-    print("y".padStart(2))
-    for (i in winX.indices) print("x$i".padStart(4))
-    for (i in winY.indices) print("y$i".padStart(4))
-    println()
-
-    do {
-        k++
-        for (i in winX.indices) {
-            winX[i] += defenderPaymentMatrix.element(i, strategyY)
-        }
-        for (j in winY.indices) {
-            winY[j] += attackerPaymentMatrix.element(strategyX, j)
-        }
-
-        val max = winX.max()!!
-        val min = winY.min()!!
-
-        val xAverageWin = max / k.toDouble()
-        val yAverageWin = min / k.toDouble()
-
-        print(k.toString().padStart(6))
-        print(strategyX.toString().padStart(2))
-        print(strategyY.toString().padStart(2))
-        winX.forEach { print(it.toInt().toString().padStart(10)) }
-        winY.forEach { print(it.toInt().toString().padStart(10)) }
-        print(String.format("%.2f", xAverageWin).padStart(10))
-        print(String.format("%.2f", yAverageWin).padStart(10))
-        println()
-
-        fileWriter.apply {
-            val values = listOf(
-                k.toString(),
-                xAverageWin.toString(),
-                yAverageWin.toString()
-            )
-            println(values.joinToString())
-        }
-
-        strategyX = winX.indexOf(max)
-        strategyY = winY.indexOf(min)
-
-
-    } while (k < 10000)
-
-    fileWriter.close()}
-
-
-fun playMatrixGame(matrix: Matrix, accuracy: Double) {
-
-    // Накопленный выигрыш
-    val winX = Array(matrix.n) { 0.0 }
-    val winY = Array(matrix.m) { 0.0 }
-
-    // step 0
-    var strategyX = 0
-    var strategyY = 0
-
-    var k = 0
-
-
-    val fileWriter = File("matrix_game.csv").printWriter()
-    fileWriter.apply {
-        val columns = listOf(
-            "k",
-            "minValue",
-            "maxValue"
-        )
-        println(columns.joinToString())
-    }
-    print("k".padStart(4))
-    print("x".padStart(2))
-    print("y".padStart(2))
-    for (i in winX.indices) print("x$i".padStart(4))
-    for (i in winY.indices) print("y$i".padStart(4))
-    println()
-
-    do {
-        k++
-        for (i in winX.indices) {
-            winX[i] += matrix.element(i, strategyY)
-        }
-        for (j in winY.indices) {
-            winY[j] += matrix.element(strategyX, j)
-        }
-
-        val max = winX.max()!!
-        val min = winY.min()!!
-
-        val xAverageWin = max / k.toDouble()
-        val yAverageWin = min / k.toDouble()
-
-        print(k.toString().padStart(6))
-        print(strategyX.toString().padStart(2))
-        print(strategyY.toString().padStart(2))
-        winX.forEach { print(it.toInt().toString().padStart(10)) }
-        winY.forEach { print(it.toInt().toString().padStart(10)) }
-        print(String.format("%.2f", xAverageWin).padStart(10))
-        print(String.format("%.2f", yAverageWin).padStart(10))
-        println()
-
-        fileWriter.apply {
-            val values = listOf(
-                k.toString(),
-                xAverageWin.toString(),
-                yAverageWin.toString()
-            )
-            println(values.joinToString())
-        }
-
-        strategyX = winX.indexOf(max)
-        strategyY = winY.indexOf(min)
-
-
-    } while ((xAverageWin - yAverageWin).absoluteValue > accuracy)
-
-    fileWriter.close()
 }

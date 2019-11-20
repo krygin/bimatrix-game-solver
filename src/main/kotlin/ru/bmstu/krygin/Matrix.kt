@@ -16,4 +16,10 @@ class Matrix(private val matrix: Array<Array<Double>>) {
     fun element(i: Int, j: Int): Double {
         return matrix[i][j]
     }
+
+    fun print() {
+        for (i in matrix.indices) {
+            println(matrix[i].map { it.toInt() }.joinToString(separator = " "))
+        }
+    }
 }

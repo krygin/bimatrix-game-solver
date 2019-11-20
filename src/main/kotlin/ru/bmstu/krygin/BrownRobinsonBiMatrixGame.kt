@@ -4,42 +4,56 @@ import java.io.File
 import java.io.PrintWriter
 import kotlin.math.absoluteValue
 
-class BrownRobinsonMatrixGame(private val matrix: Matrix, private val accuracy: Double) {
+class BrownRobinsonBiMatrixGame(private val defenderMatrix: Matrix, private val attackerMatrix: Matrix, private val accuracy: Double) {
 
     fun play() {
+        println("Defender matrix")
+        defenderMatrix.print()
+        println("Attacker matrix")
+        attackerMatrix.print()
+
+
         // Накопленный выигрыш
-        val winX = Array(matrix.n) { 0.0 }
-        val winY = Array(matrix.m) { 0.0 }
+        val winX = Array(defenderMatrix.n) { 0.0 }
+        val winY = Array(attackerMatrix.m) { 0.0 }
 
         var k = 0
 
 
-        val fileWriter = File("matrix_game.csv").printWriter()
+        val fileWriter = File("bi_matrix_game.csv").printWriter()
         writeHeader(fileWriter)
-        logHeader(winX, winY)
+//        logHeader(winX, winY)
+
+        var currentXWin = 0.0
+        var currentYWin = 0.0
 
         do {
 
             val strategyX = winX.indexOf(winX.max()!!)
-            val strategyY = winY.indexOf(winY.min()!!)
+            val strategyY = winY.indexOf(winY.max()!!)
 
             k++
             for (i in winX.indices) {
-                winX[i] += matrix.element(i, strategyY)
+                winX[i] += defenderMatrix.element(i, strategyY)
             }
             for (j in winY.indices) {
-                winY[j] += matrix.element(strategyX, j)
+                winY[j] += attackerMatrix.element(strategyX, j)
             }
 
             val xAverageWin = winX.max()!! / k.toDouble()
-            val yAverageWin = winY.min()!! / k.toDouble()
+            val yAverageWin = winY.max()!! / k.toDouble()
+
+            currentXWin = xAverageWin
+            currentYWin = yAverageWin
 
             writeStep(fileWriter, k, xAverageWin, yAverageWin)
-            logStep(k, strategyX, strategyY, winX, winY, xAverageWin, yAverageWin)
+//            logStep(k, strategyX, strategyY, winX, winY, xAverageWin, yAverageWin)
 
-        } while ((xAverageWin - yAverageWin).absoluteValue > accuracy)
+        } while (k < 8000)
 
         fileWriter.close()
+
+        logResult(k, currentXWin, currentYWin)
     }
 
     private fun writeHeader(fileWriter: PrintWriter) {
@@ -78,5 +92,9 @@ class BrownRobinsonMatrixGame(private val matrix: Matrix, private val accuracy: 
         print(String.format("%.2f", xAverageWin).padStart(10))
         print(String.format("%.2f", yAverageWin).padStart(10))
         println()
+    }
+
+    private fun logResult(k: Int, xAverageWin: Double, yAverageWin: Double) {
+        println("Game Result: $k $xAverageWin $yAverageWin")
     }
 }
